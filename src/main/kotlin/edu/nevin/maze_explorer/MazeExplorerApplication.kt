@@ -1,4 +1,4 @@
-package edu.nevin.maze_explorer
+package edu.carroll.nevin.maze_explorer
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
