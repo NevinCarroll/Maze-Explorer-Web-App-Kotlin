@@ -3,14 +3,33 @@
 
 <section th:fragment="content">
 
-  <h2>Maze Editor</h2>
+    <h2>Maze Editor</h2>
 
-  <div id="editor"></div>
+    <!-- Tutorial / instructions -->
+    <div id="maze-tutorial">
+        <h3>How to Use the Maze Editor</h3>
+        <ol>
+            <li>Click on a tile in the grid to cycle between:
+                <ul>
+                    <li><strong>Open tile</strong> (white)</li>
+                    <li><strong>Wall</strong> (black outline)</li>
+                    <li><strong>End tile</strong> (flag)</li>
+                </ul>
+            </li>
+            <li>The starting position of the player is always the top-left open tile.</li>
+            <li>Click <strong>Test Maze</strong> to navigate the maze before saving.</li>
+            <li>Mazes must have at least one path from start to end; impossible mazes cannot be saved.</li>
+            <li>All saved mazes are stored on the server and can be played later.</li>
+        </ol>
+    </div>
 
-  <button id="testMaze">Test Maze</button>
-  <button id="saveMaze" disabled>Save Maze</button>
 
-  <script src="/js/maze_editor.js"></script>
+    <div id="editor"></div>
+
+    <button id="testMaze">Test Maze</button>
+    <a th:href="@{/maze-creator}">Back</a>
+
+    <script src="/js/maze_editor.js"></script>
 
 </section>
 </html>

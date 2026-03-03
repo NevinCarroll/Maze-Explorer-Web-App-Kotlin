@@ -1,7 +1,17 @@
 <html th:replace="/fragments/base :: html" lang="en">
   <section th:fragment="content">
     <h2>Tutorial</h2>
+    <p>Welcome to Maze Explorer.</p>
+    <p>Your goal is to complete the maze in the shortest amount of time possible by reaching the flag point.</p>
     <p>Controls: W: Up, S: Down, A: Left, D: Right</p>
+
+    <p>Player</p>
+    <img th:src="@{/images/player.png}">
+    <p>Wall</p>
+    <img th:src="@{/images/wall.png}">
+    <p>Flag</p>
+    <img th:src="@{/images/flag.png}">
+
     <a th:href="@{/}">Back to Menu</a>
   </section>
 </html>

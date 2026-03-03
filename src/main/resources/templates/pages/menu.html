@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="/fragments/base :: html">
     <section th:fragment="content">
-        <a th:href="@{/game}">Play Game</a>
-        <a th:href="@{/tutorial}">Tutorial</a>
-        <a th:href="@{/highscores-page}">High Scores</a>
+        <ul>
+            <li><a th:href="@{/game}">Play Game</a></li>
+            <li><a th:href="@{/tutorial}">Tutorial</a></li>
+            <li><a th:href="@{/highscores-page}">High Scores</a></li>
+            <li><a th:href="@{/maze-creator}">Create a Maze</a></li>
+        </ul>
     </section>
 </html>

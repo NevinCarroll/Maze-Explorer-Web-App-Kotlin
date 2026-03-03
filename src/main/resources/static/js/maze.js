@@ -8,6 +8,7 @@ let gameActive = true;
 const tileSize = 50; // pixels
 const mazeContainer = document.getElementById("maze-container");
 const timerLabel = document.getElementById("timer");
+const testMode = new URLSearchParams(window.location.search).get("test") === "true";
 
 async function loadMazeFromFile(filename) {
     try {
@@ -151,6 +152,8 @@ function showEndGamePopup() {
     gameActive = false;
     stopTimer();
 
+    const isCustom = testMode && !!sessionStorage.getItem("customMaze");
+
     // Overlay
     const overlay = document.createElement("div");
     overlay.id = "endgame-overlay";
@@ -173,63 +176,89 @@ function showEndGamePopup() {
     modal.style.textAlign = "center";
     modal.style.minWidth = "300px";
 
-    if(sessionStorage.getItem("customMaze")){
-        sessionStorage.setItem("mazeVerified","true");
-    }
-
     modal.innerHTML = `
         <h2>You Escaped the Maze!</h2>
         <p>Time: ${secondsElapsed}s</p>
-        <input id="player-name" placeholder="Enter your name"
-               style="padding:8px;width:80%;margin:10px 0;" />
-        <br/>
-        <button id="submit-score">Submit Score</button>
-        <div id="post-buttons" style="display:none;margin-top:15px;">
-            <button id="play-again">Play Again</button>
-            <button id="view-scores">High Scores</button>
-            <button id="main-menu">Main Menu</button>
-        </div>
     `;
+
+    if (isCustom) {
+        // Save button for custom maze
+        const saveBtn = document.createElement("button");
+        saveBtn.textContent = "Save Maze";
+        saveBtn.style.marginTop = "15px";
+        saveBtn.onclick = async () => {
+            const mazeName = sessionStorage.getItem("mazeName");
+            if (!mazeName) {
+                alert("Missing maze name!");
+                return;
+            }
+
+            saveBtn.disabled = true;
+
+            // Save maze to server
+            await fetch(`/mazes/save?name=${mazeName}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(maze.map(r => r.join("")))
+            });
+
+            alert("Maze saved successfully!");
+            document.body.removeChild(overlay);
+            window.location.href = "/"; // Return to main menu
+        };
+
+        modal.appendChild(saveBtn);
+    } else {
+        // Normal modal buttons for regular mazes
+        modal.innerHTML += `
+            <input id="player-name" placeholder="Enter your name"
+                   style="padding:8px;width:80%;margin:10px 0;" />
+            <br/>
+            <button id="submit-score">Submit Score</button>
+            <div id="post-buttons" style="display:none;margin-top:15px;">
+                <button id="play-again">Play Again</button>
+                <button id="view-scores">High Scores</button>
+                <button id="main-menu">Main Menu</button>
+            </div>
+        `;
+
+        const submitBtn = modal.querySelector("#submit-score");
+        const nameInput = modal.querySelector("#player-name");
+        const postButtons = modal.querySelector("#post-buttons");
+
+        submitBtn.onclick = async () => {
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert("Name required!");
+                return;
+            }
+
+            submitBtn.disabled = true;
+
+            await fetch(`/highscores?name=${encodeURIComponent(name)}&time=${secondsElapsed}`, { method: "POST" });
+
+            submitBtn.style.display = "none";
+            nameInput.disabled = true;
+            postButtons.style.display = "block";
+        };
+
+        modal.querySelector("#play-again").onclick = () => {
+            document.body.removeChild(overlay);
+            gameActive = true;
+            loadRandomMaze().then(() => startTimer());
+        };
+
+        modal.querySelector("#view-scores").onclick = () => {
+            window.location.href = "/highscores-page";
+        };
+
+        modal.querySelector("#main-menu").onclick = () => {
+            window.location.href = "/";
+        };
+    }
 
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
-
-    const submitBtn = modal.querySelector("#submit-score");
-    const nameInput = modal.querySelector("#player-name");
-    const postButtons = modal.querySelector("#post-buttons");
-
-    submitBtn.onclick = async () => {
-        const name = nameInput.value.trim();
-        if (!name) {
-            alert("Name required!");
-            return;
-        }
-
-        submitBtn.disabled = true;
-
-        await fetch(
-            `/highscores?name=${encodeURIComponent(name)}&time=${secondsElapsed}`,
-            { method: "POST" }
-        );
-
-        submitBtn.style.display = "none";
-        nameInput.disabled = true;
-        postButtons.style.display = "block";
-    };
-
-    modal.querySelector("#play-again").onclick = () => {
-        document.body.removeChild(overlay);
-        gameActive = true;
-        loadRandomMaze(); // or loadMazeFromFile(...)
-    };
-
-    modal.querySelector("#view-scores").onclick = () => {
-        window.location.href = "/highscores-page";
-    };
-
-    modal.querySelector("#main-menu").onclick = () => {
-        window.location.href = "/";
-    };
 }
 
 // Keyboard controls
@@ -245,10 +274,6 @@ window.addEventListener("keydown", e => {
 });
 
 (async () => {
-
-    const testMode =
-        new URLSearchParams(window.location.search)
-            .get("test");
 
     if(testMode && loadCustomMaze()){
         renderMaze();
