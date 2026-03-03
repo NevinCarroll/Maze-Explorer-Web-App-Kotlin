@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}">Maze Explorer</title>
+</head>
+
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<main>
+    <!-- PAGE CONTENT GOES HERE -->
+    <div th:replace="~{::content}"></div>
+</main>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>
