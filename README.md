@@ -40,6 +40,7 @@ The player navigates through a maze to reach the end while avoiding walls and mo
 ### Maze Creation
 There is a new page where the user can make their own custom maze and upload it to the server. They will be asked for a 
 file name, then they can assign a tile type for each tile. Before uploading, they must test maze to ensure it is possible.
+So they can't upload impossible mazes.
 
 ## Requirements
 
