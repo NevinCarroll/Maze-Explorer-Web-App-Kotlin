@@ -1,9 +1,11 @@
-<section th:fragment="content">
-  <div id="maze-container"></div>
-  <div id="controls">
-    <span id="timer">Time: 0s</span>
-    <button id="back-to-menu">Back</button>
-  </div>
-</section>
+<html th:replace="/fragments/base :: html" lang="en">
+  <section th:fragment="content">
+    <div id="maze-container"></div>
+    <div id="controls">
+      <span id="timer">Time: 0s</span>
+      <a th:href="@{/}">Back to Menu</a>
+    </div>
 
-<script src="/js/maze.js"></script>
+    <script th:src="@{/js/maze.js}"></script>
+  </section>
+</html>
