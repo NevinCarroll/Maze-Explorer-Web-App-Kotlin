@@ -5,7 +5,6 @@ let player = { row: 0, col: 0 };
 let secondsElapsed = 0;
 let timerInterval = null;
 let gameActive = true;
-const mazeSize = 10; // 10x10 for now
 const tileSize = 50; // pixels
 const mazeContainer = document.getElementById("maze-container");
 const timerLabel = document.getElementById("timer");
@@ -63,14 +62,32 @@ async function loadRandomMaze() {
     }
 }
 
+function loadCustomMaze(){
+
+    const stored =
+        sessionStorage.getItem("customMaze");
+
+    if(!stored) return false;
+
+    maze =
+        JSON.parse(stored)
+            .map(row=>row.split(""));
+
+    player.row=0;
+    player.col=0;
+
+    renderMaze();
+    return true;
+}
+
 function renderMaze() {
     mazeContainer.style.display = "grid";
-    mazeContainer.style.gridTemplateRows = `repeat(${mazeSize}, ${tileSize}px)`;
-    mazeContainer.style.gridTemplateColumns = `repeat(${mazeSize}, ${tileSize}px)`;
+    mazeContainer.style.gridTemplateRows = `repeat(${maze.length}, ${tileSize}px)`;
+    mazeContainer.style.gridTemplateColumns = `repeat(${maze.length}, ${tileSize}px)`;
     mazeContainer.innerHTML = "";
 
-    for (let r = 0; r < mazeSize; r++) {
-        for (let c = 0; c < mazeSize; c++) {
+    for (let r = 0; r < maze.length; r++) {
+        for (let c = 0; c < maze.length; c++) {
             const cell = document.createElement("img");
             cell.style.width = `${tileSize}px`;
             cell.style.height = `${tileSize}px`;
@@ -99,6 +116,8 @@ function renderMaze() {
 }
 
 function startTimer() {
+    stopTimer() // Ensure multiple timers are not incrementing the same value multiple times per second
+
     secondsElapsed = 0;
     timerLabel.textContent = `Time: 0s`;
     timerInterval = setInterval(() => {
@@ -114,7 +133,7 @@ function stopTimer() {
 function movePlayer(dr, dc) {
     const newRow = player.row + dr;
     const newCol = player.col + dc;
-    if (newRow < 0 || newRow >= mazeSize || newCol < 0 || newCol >= mazeSize) return;
+    if (newRow < 0 || newRow >= maze.length || newCol < 0 || newCol >= maze[0].length) return;
     if (maze[newRow][newCol] === '1') return;
 
     player.row = newRow;
@@ -153,6 +172,10 @@ function showEndGamePopup() {
     modal.style.borderRadius = "10px";
     modal.style.textAlign = "center";
     modal.style.minWidth = "300px";
+
+    if(sessionStorage.getItem("customMaze")){
+        sessionStorage.setItem("mazeVerified","true");
+    }
 
     modal.innerHTML = `
         <h2>You Escaped the Maze!</h2>
@@ -221,9 +244,18 @@ window.addEventListener("keydown", e => {
     }
 });
 
-// Initialize game
-loadRandomMaze().then(r => {
-    renderMaze();
+(async () => {
+
+    const testMode =
+        new URLSearchParams(window.location.search)
+            .get("test");
+
+    if(testMode && loadCustomMaze()){
+        renderMaze();
+    } else {
+        await loadRandomMaze();
+    }
+
     startTimer();
 
     document.getElementById("back-to-menu").addEventListener("click", () => {
@@ -231,5 +263,10 @@ loadRandomMaze().then(r => {
         window.location.href = "/"; // Go back to menu
     });
 
-});
+})();
+
+// Initialize game
+
+
+
 

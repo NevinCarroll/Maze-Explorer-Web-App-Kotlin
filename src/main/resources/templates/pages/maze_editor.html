@@ -1,0 +1,16 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/base :: html">
+
+<section th:fragment="content">
+
+  <h2>Maze Editor</h2>
+
+  <div id="editor"></div>
+
+  <button id="testMaze">Test Maze</button>
+  <button id="saveMaze" disabled>Save Maze</button>
+
+  <script src="/js/maze_editor.js"></script>
+
+</section>
+</html>
