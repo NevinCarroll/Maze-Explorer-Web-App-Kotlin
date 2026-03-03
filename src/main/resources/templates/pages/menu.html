@@ -1,6 +1,8 @@
-<section th:fragment="content">
-    <h2>Maze Explorer</h2>
-    <button id="play-game">Play Game</button>
-    <button id="tutorial">Tutorial</button>
-    <button id="highscores">High Scores</button>
-</section>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="/fragments/base :: html">
+    <section th:fragment="content">
+        <a th:href="@{/game}">Play Game</a>
+        <a th:href="@{/tutorial}">Tutorial</a>
+        <a th:href="@{/highscores-page}">High Scores</a>
+    </section>
+</html>
